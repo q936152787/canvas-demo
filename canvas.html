@@ -1,11 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>canvas</title>
-</head>
-<body>
-    <canvas id="canvas" width="100vw" height="100vh"></canvas>
-</body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="canvas" width="300" height="300"></canvas>
+  </body>
+  <script>
+    let signal = false;
+    let last;
+    let canvas = document.getElementById("canvas");
+    canvas.width = document.documentElement.clientWidth;
+    canvas.height = document.documentElement.clientHeight;
+    let ctx = canvas.getContext("2d");
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    let isTouchDevice = "ontouchstart" in document.documentElement;
+    if (isTouchDevice === false) {
+      canvas.onmousedown = (x) => {
+        signal = !signal;
+        last = [x.clientX, x.clientY];
+      };
+
+      canvas.onmousemove = (x) => {
+        if (signal === true) {
+          ctx.beginPath();
+          ctx.moveTo(last[0], last[1]);
+          ctx.lineTo(x.clientX, x.clientY);
+          ctx.stroke();
+          last = [x.clientX, x.clientY];
+        }
+      };
+    } else {
+      canvas.ontouchstart = (x) => {
+        last = [x.touches[0].clientX, x.touches[0].clientY];
+      };
+      canvas.ontouchmove = (x) => {
+        ctx.beginPath();
+        ctx.moveTo(last[0], last[1]);
+        ctx.lineTo(x.touches[0].clientX, x.touches[0].clientY);
+        ctx.stroke();
+        last = [x.touches[0].clientX, x.touches[0].clientY];
+      };
+    }
+  </script>
 </html>
